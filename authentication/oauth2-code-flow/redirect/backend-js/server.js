@@ -20,14 +20,14 @@ const port = process.env.PORT || 1337;
  *
  */
 const configurationObject = {
-    "appKey": "faf2acbb48754413a043676b9c2c2bd5",
-    "appSecret": "c074e19278f74700b21d66287a30c14e",
+    "appKey": "ac4904e1dd514e72b4379c756ece06c5",
+    "appSecret": "bbd0873c920746e290eee697380c9724",
     "tokenEndpoint": "https://sim.logonvalidation.net/token"
 };
 
 function apiHandler(request, response) {
     const query = request.body;
-
+    console.log(query);
     function sendResponse(httpStatusCode, responseObject) {
         const responseBody = JSON.stringify(responseObject);
         // Tempting, but don't log outgoing data, because this is sensitive information!
@@ -45,10 +45,12 @@ function apiHandler(request, response) {
     }
 
     function requestToken() {
+        console.log("Query:", query);
         const data = new URLSearchParams();
         // Tempting, but don't log incoming data, because this is sensitive information!
         data.append("client_id", configurationObject.appKey);
         data.append("client_secret", configurationObject.appSecret);
+        data.append("redirect_uri", configurationObject.redirectUri)
         if (query.code) {
             data.append("grant_type", "authorization_code");
             data.append("code", query.code);
@@ -87,6 +89,7 @@ server.use(morgan("combined"));  // The request logger
 server.use(express.json());
 // The redirect web page runs on http://localhost:1337/index.html
 const staticPage = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+console.log(staticPage);
 server.use(express.static(staticPage));
 // The backend is available for POST on http://localhost:1337/server
 server.post("/server", apiHandler);
